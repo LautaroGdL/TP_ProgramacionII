@@ -1,8 +1,10 @@
+package Modelos;
+
 public class PruebaGeneral {
     public static void main(String[] args) {
         System.out.println("========== CASO CORRECTO ==========");
-        Usuario alice = new Usuario("Alice");
-        Usuario bob = new Usuario("Bob");
+        Usuario alice = new Usuario(1, "Alice");
+        Usuario bob = new Usuario(2, "Bob");
 
         alice.agregarAmigo(bob);
         System.out.println("Amigos de Alice: " + alice.getAmigos());
@@ -17,7 +19,7 @@ public class PruebaGeneral {
         alice.agregarAmigo(alice);  // No debería agregarse a sí misma
         System.out.println("Amigos de Alice tras intento: " + alice.getAmigos());
 
-        Usuario carol = new Usuario("Carol");
+        Usuario carol = new Usuario(3, "Carol");
         System.out.println("¿Alice está conectada con Carol? " + alice.estaConectadoCon(carol)); // Esperado: false
         alice.agregarAmigo(carol);
         System.out.println("¿Alice está conectada con Carol ahora? " + alice.estaConectadoCon(carol)); // Esperado: true
