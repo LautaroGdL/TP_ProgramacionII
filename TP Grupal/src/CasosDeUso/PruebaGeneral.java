@@ -1,4 +1,6 @@
-package Modelos;
+package CasosDeUso;
+
+import Modelos.Usuario;
 
 public class PruebaGeneral {
     public static void main(String[] args) {
