@@ -16,8 +16,13 @@ public class Main {
             System.out.println("3. Ver todos los usuarios");
             System.out.println("4. Salir");
             System.out.print("Seleccione una opción: ");
-            opcion = scanner.nextInt();
-            scanner.nextLine(); // limpiar buffer
+            try {
+                System.out.print("Seleccione una opción: ");
+                opcion = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, ingrese un número del 1 al 4.");
+                opcion = -1;
+            }
 
             switch (opcion) {
                 case 1:
@@ -75,10 +80,19 @@ public class Main {
             System.out.println("1. Ver mis amigos");
             System.out.println("2. Agregar amigo por ID");
             System.out.println("3. Eliminar amigo por ID");
-            System.out.println("4. Cerrar sesión");
+            System.out.println("4. Enviar mensaje");
+            System.out.println("5. Ver mensajes");
+            System.out.println("6. Ver si estoy conectado con otro usuario");
+            System.out.println("7. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
-            opcion = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                System.out.print("Seleccione una opción: ");
+                opcion = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, ingrese un número del 1 al 7.");
+                opcion = -1;
+            }
+
 
             switch (opcion) {
                 case 1:
@@ -112,6 +126,43 @@ public class Main {
                     break;
 
                 case 4:
+                    System.out.print("Ingrese el ID del usuario al que desea enviar un mensaje: ");
+                    int idReceptor = scanner.nextInt();
+                    scanner.nextLine();
+                    Usuario receptor = usuarios.get(idReceptor);
+
+                    if (receptor != null && receptor != usuario) {
+                        System.out.print("Escriba su mensaje: ");
+                        String contenido = scanner.nextLine();
+                        Mensaje mensaje = new Mensaje(usuario, receptor, contenido);
+                        receptor.recibirMensaje(mensaje);
+                        System.out.println("Mensaje enviado a " + receptor.getNombre());
+                    } else {
+                        System.out.println("ID inválido o no puedes enviarte mensajes a ti mismo.");
+                    }
+                    break;
+
+                case 5:
+                    usuario.mostrarMensajes();
+                    break;
+
+                case 6:
+                    System.out.print("Ingrese el ID del usuario con el que desea verificar conexión: ");
+                    int idDestino = scanner.nextInt();
+                    scanner.nextLine();
+                    Usuario destino = usuarios.get(idDestino);
+
+                    if (destino != null && destino != usuario) {
+                        boolean conectado = usuario.estaConectadoCon(destino);
+                        System.out.println(conectado
+                                ? "¡Son amigos!"
+                                : "No tiene relación alguna con ese usuario.");
+                    } else {
+                        System.out.println("ID inválido o no puedes verificar conexión contigo mismo.");
+                    }
+                    break;
+
+                case 7:
                     System.out.println("Sesión cerrada.");
                     break;
 
