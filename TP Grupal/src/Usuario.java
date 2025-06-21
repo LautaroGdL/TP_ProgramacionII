@@ -1,23 +1,14 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
-public class Usuario implements ConjuntoUsuario {
-    private final int id;
-    private final String nombre;
+public class Usuario {
+    private String nombre;
     private List<Usuario> amigos;
-    private List<Mensaje> bandejaEntrada;
+    private Map<Usuario, List<String>> mensajes;
 
-    public Usuario(int id, String nombre) {
-        this.id = id;
+    public Usuario(String nombre) {
         this.nombre = nombre;
         this.amigos = new ArrayList<>();
-        this.bandejaEntrada = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
+        this.mensajes = new HashMap<>();
     }
 
     public String getNombre() {
@@ -28,78 +19,67 @@ public class Usuario implements ConjuntoUsuario {
         return amigos;
     }
 
-    public void agregarAmigo(Usuario otro) {
-        if (!amigos.contains(otro) && otro != this) {
-            amigos.add(otro);
-            otro.agregarAmigo(this); // doble enlace
+    public void agregarAmigo(Usuario amigo) {
+        if (!amigos.contains(amigo) && amigo != this) {
+            amigos.add(amigo);
+            amigo.agregarAmigo(this);
         }
     }
 
-    public void eliminarAmigo(Usuario otro) {
-        if (amigos.contains(otro)) {
-            amigos.remove(otro);
-            otro.eliminarAmigo(this); // romper el doble enlace
+    public void eliminarAmigo(Usuario amigo) {
+        if (amigos.contains(amigo)) {
+            amigos.remove(amigo);
+            amigo.getAmigos().remove(this);
         }
     }
 
-    public void mostrarAmigos() {
-        if (amigos.isEmpty()) {
-            System.out.println(nombre + " no tiene amigos.");
+    public void enviarMensaje(Usuario destino, String contenido) {
+        mensajes.putIfAbsent(destino, new ArrayList<>());
+        destino.mensajes.putIfAbsent(this, new ArrayList<>());
+
+        String mensajeEnviado = "Yo: " + contenido;
+        String mensajeRecibido = this.nombre + ": " + contenido;
+
+        mensajes.get(destino).add(mensajeEnviado);
+        destino.mensajes.get(this).add(mensajeRecibido);
+    }
+
+    public void verMensajesCon(Usuario otro) {
+        List<String> historial = mensajes.get(otro);
+        if (historial == null || historial.isEmpty()) {
+            System.out.println("No hay mensajes con " + otro.getNombre());
         } else {
-            System.out.println("Amigos de " + nombre + ":");
-            for (Usuario amigo : amigos) {
-                System.out.println(" - " + amigo.getNombre() + " (ID: " + amigo.getId() + ")");
-            }
-        }
-    }
-
-    public boolean estaConectadoCon(Usuario destino) {
-        List<Usuario> visitados = new ArrayList<>();
-        Queue<Usuario> cola = new LinkedList<>();
-        cola.add(this);
-
-        while (!cola.isEmpty()) {
-            Usuario actual = cola.poll();
-            if (actual.equals(destino)) return true;
-
-            if (!visitados.contains(actual)) {
-                visitados.add(actual);
-                for (Usuario amigo : actual.getAmigos()) {
-                    if (!visitados.contains(amigo)) {
-                        cola.add(amigo);
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public void recibirMensaje(Mensaje mensaje) {
-        bandejaEntrada.add(mensaje);
-    }
-
-    public void mostrarMensajes() {
-        if (bandejaEntrada.isEmpty()) {
-            System.out.println("No tienes mensajes.");
-        } else {
-            System.out.println("Mensajes recibidos:");
-            for (Mensaje mensaje : bandejaEntrada) {
+            System.out.println("Conversación con " + otro.getNombre() + ":");
+            for (String mensaje : historial) {
                 System.out.println(mensaje);
             }
         }
     }
 
-    @Override
-    public String toString() {
-        return "ID: " + id + " | Nombre: " + nombre;
+    public boolean estaConectadoCon(Usuario destino) {
+        if (this == destino) return true;
+        Queue<Usuario> cola = new LinkedList<>();
+        Set<Usuario> visitados = new HashSet<>();
+        cola.add(this);
+        visitados.add(this);
+
+        while (!cola.isEmpty()) {
+            Usuario actual = cola.poll();
+            for (Usuario amigo : actual.getAmigos()) {
+                if (amigo.equals(destino)) {
+                    return true;
+                }
+                if (!visitados.contains(amigo)) {
+                    visitados.add(amigo);
+                    cola.add(amigo);
+                }
+            }
+        }
+        return false;
     }
 
-    // Métodos vacíos de la interfaz (no usados)
-    @Override public void inicializar() {}
-    @Override public void agregar(int valor) {}
-    @Override public boolean pertenece(int valor) { return false; }
-    @Override public void sacar(int valor) {}
-    @Override public int elegir() { return 0; }
-    @Override public boolean estaVacia() { return false; }
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }

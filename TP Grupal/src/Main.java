@@ -17,7 +17,6 @@ public class Main {
             System.out.println("4. Salir");
             System.out.print("Seleccione una opción: ");
             try {
-                System.out.print("Seleccione una opción: ");
                 opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida. Por favor, ingrese un número del 1 al 4.");
@@ -28,7 +27,7 @@ public class Main {
                 case 1:
                     System.out.print("Nombre del nuevo usuario: ");
                     String nombre = scanner.nextLine();
-                    Usuario nuevoUsuario = new Usuario(contadorId, nombre);
+                    Usuario nuevoUsuario = new Usuario(nombre);
                     usuarios.put(contadorId, nuevoUsuario);
                     System.out.println("Usuario creado con ID: " + contadorId);
                     contadorId++;
@@ -38,9 +37,9 @@ public class Main {
                     System.out.print("Ingrese el nombre de usuario: ");
                     String nombreLogin = scanner.nextLine();
                     Usuario usuarioActual = null;
-                    for (Usuario u : usuarios.values()) {
-                        if (u.getNombre().equalsIgnoreCase(nombreLogin)) {
-                            usuarioActual = u;
+                    for (var entry : usuarios.entrySet()) {
+                        if (entry.getValue().getNombre().equalsIgnoreCase(nombreLogin)) {
+                            usuarioActual = entry.getValue();
                             break;
                         }
                     }
@@ -55,8 +54,8 @@ public class Main {
 
                 case 3:
                     System.out.println("Usuarios registrados:");
-                    for (Usuario u : usuarios.values()) {
-                        System.out.println(u);
+                    for (var entry : usuarios.entrySet()) {
+                        System.out.println("ID: " + entry.getKey() + " | Nombre: " + entry.getValue().getNombre());
                     }
                     break;
 
@@ -81,28 +80,40 @@ public class Main {
             System.out.println("2. Agregar amigo por ID");
             System.out.println("3. Eliminar amigo por ID");
             System.out.println("4. Enviar mensaje");
-            System.out.println("5. Ver mensajes");
-            System.out.println("6. Ver si estoy conectado con otro usuario");
+            System.out.println("5. Ver mensajes con un amigo");
+            System.out.println("6. Ver si tengo amistad con otro usuario");
             System.out.println("7. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
             try {
-                System.out.print("Seleccione una opción: ");
                 opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida. Por favor, ingrese un número del 1 al 7.");
+                System.out.println("Entrada inválida. Por favor, ingrese un número válido.");
                 opcion = -1;
             }
 
-
             switch (opcion) {
                 case 1:
-                    usuario.mostrarAmigos();
+                    if (usuario.getAmigos().isEmpty()) {
+                        System.out.println("No tienes amigos.");
+                    } else {
+                        System.out.println("Tus amigos:");
+                        for (Usuario amigo : usuario.getAmigos()) {
+                            int idAmigo = -1;
+                            for (var entry : usuarios.entrySet()) {
+                                if (entry.getValue().equals(amigo)) {
+                                    idAmigo = entry.getKey();
+                                    break;
+                                }
+                            }
+                            System.out.println("- " + amigo.getNombre() + " (ID: " + idAmigo + ")");
+                        }
+                    }
                     break;
+
 
                 case 2:
                     System.out.print("Ingrese el ID del amigo a agregar: ");
-                    int idAgregar = scanner.nextInt();
-                    scanner.nextLine();
+                    int idAgregar = Integer.parseInt(scanner.nextLine());
                     Usuario amigoAgregar = usuarios.get(idAgregar);
                     if (amigoAgregar != null && amigoAgregar != usuario) {
                         usuario.agregarAmigo(amigoAgregar);
@@ -114,8 +125,7 @@ public class Main {
 
                 case 3:
                     System.out.print("Ingrese el ID del amigo a eliminar: ");
-                    int idEliminar = scanner.nextInt();
-                    scanner.nextLine();
+                    int idEliminar = Integer.parseInt(scanner.nextLine());
                     Usuario amigoEliminar = usuarios.get(idEliminar);
                     if (amigoEliminar != null && usuario.getAmigos().contains(amigoEliminar)) {
                         usuario.eliminarAmigo(amigoEliminar);
@@ -127,15 +137,13 @@ public class Main {
 
                 case 4:
                     System.out.print("Ingrese el ID del usuario al que desea enviar un mensaje: ");
-                    int idReceptor = scanner.nextInt();
-                    scanner.nextLine();
+                    int idReceptor = Integer.parseInt(scanner.nextLine());
                     Usuario receptor = usuarios.get(idReceptor);
 
                     if (receptor != null && receptor != usuario) {
                         System.out.print("Escriba su mensaje: ");
                         String contenido = scanner.nextLine();
-                        Mensaje mensaje = new Mensaje(usuario, receptor, contenido);
-                        receptor.recibirMensaje(mensaje);
+                        usuario.enviarMensaje(receptor, contenido);
                         System.out.println("Mensaje enviado a " + receptor.getNombre());
                     } else {
                         System.out.println("ID inválido o no puedes enviarte mensajes a ti mismo.");
@@ -143,22 +151,47 @@ public class Main {
                     break;
 
                 case 5:
-                    usuario.mostrarMensajes();
+                    if (usuario.getAmigos().isEmpty()) {
+                        System.out.println("No tienes amigos con quienes ver mensajes.");
+                        break;
+                    }
+                    System.out.println("Tus amigos:");
+                    for (Usuario amigo : usuario.getAmigos()) {
+                        System.out.println("- " + amigo.getNombre());
+                    }
+                    System.out.print("Ingrese el nombre del amigo para ver la conversación: ");
+                    String nombreAmigo = scanner.nextLine();
+                    Usuario amigoParaVer = null;
+                    for (Usuario a : usuario.getAmigos()) {
+                        if (a.getNombre().equalsIgnoreCase(nombreAmigo)) {
+                            amigoParaVer = a;
+                            break;
+                        }
+                    }
+                    if (amigoParaVer != null) {
+                        usuario.verMensajesCon(amigoParaVer);
+                    } else {
+                        System.out.println("No tienes un amigo con ese nombre.");
+                    }
                     break;
 
                 case 6:
-                    System.out.print("Ingrese el ID del usuario con el que desea verificar conexión: ");
-                    int idDestino = scanner.nextInt();
-                    scanner.nextLine();
-                    Usuario destino = usuarios.get(idDestino);
-
+                    System.out.print("Ingrese el nombre del usuario para verificar conexión: ");
+                    String nombreDestino = scanner.nextLine();
+                    Usuario destino = null;
+                    for (Usuario u : usuarios.values()) {
+                        if (u.getNombre().equalsIgnoreCase(nombreDestino)) {
+                            destino = u;
+                            break;
+                        }
+                    }
                     if (destino != null && destino != usuario) {
                         boolean conectado = usuario.estaConectadoCon(destino);
                         System.out.println(conectado
-                                ? "¡Son amigos!"
-                                : "No tiene relación alguna con ese usuario.");
+                                ? "Sos amigo de " + destino.getNombre()
+                                : "No tienes amitad con " + destino.getNombre());
                     } else {
-                        System.out.println("ID inválido o no puedes verificar conexión contigo mismo.");
+                        System.out.println("Usuario inválido o no puedes verificar conexión contigo mismo.");
                     }
                     break;
 
@@ -167,8 +200,8 @@ public class Main {
                     break;
 
                 default:
-                    System.out.println("Opción no válida.");
+                    if (opcion != -1) System.out.println("Opción no válida.");
             }
-        } while (opcion != 4);
+        } while (opcion != 6);
     }
 }
