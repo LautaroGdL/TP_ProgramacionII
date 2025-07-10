@@ -3,25 +3,30 @@ package Modelos;
 import java.util.*;
 
 public class GrafoUsuarios {
-    private List<Usuario> usuarios;
+    private Map<Usuario, Set<Usuario>> grafo;
 
     public GrafoUsuarios() {
-        usuarios = new ArrayList<>();
+        grafo = new HashMap<>();
     }
 
     public void agregarUsuario(Usuario u) {
-        usuarios.add(u);
+        grafo.putIfAbsent(u, new HashSet<>());
     }
 
-    public void conectarUsuarios(Usuario a, Usuario b) {
-        a.agregarAmigo(b);
+    public void agregarRelacion(Usuario a, Usuario b) {
+        grafo.get(a).add(b);
+        grafo.get(b).add(a);
     }
 
-    public boolean estanConectados(Usuario a, Usuario b) {
-        return a.estaConectadoCon(b);
-    }
-
-    public List<Usuario> obtenerUsuarios() {
-        return usuarios;
+    public Set<Usuario> sugerenciasDeAmigos(Usuario u) {
+        Set<Usuario> sugerencias = new HashSet<>();
+        for (Usuario amigo : u.getAmigos()) {
+            for (Usuario posible : amigo.getAmigos()) {
+                if (!u.equals(posible) && !u.getAmigos().contains(posible)) {
+                    sugerencias.add(posible);
+                }
+            }
+        }
+        return sugerencias;
     }
 }

@@ -1,18 +1,14 @@
 package Modelos;
 
-// Clase Mensaje
 public class Mensaje {
-    private Usuario emisor;
-    private Usuario receptor;
-    private String contenido;
+    private final String contenido;
 
-    public Mensaje(Usuario emisor, Usuario receptor, String contenido) {
-        this.emisor = emisor;
-        this.receptor = receptor;
+    public Mensaje(String contenido) {
         this.contenido = contenido;
     }
 
+    @Override
     public String toString() {
-        return emisor.getNombre() + " -> " + receptor.getNombre() + ": " + contenido;
+        return contenido;
     }
 }
