@@ -13,6 +13,7 @@ public class Main {
         int op;
 
         do {
+            // Menu inicial
             System.out.println("\nMenú principal:");
             System.out.println("1. Crear usuario");
             System.out.println("2. Iniciar sesión");
@@ -22,6 +23,8 @@ public class Main {
             op = Integer.parseInt(sc.nextLine());
 
             switch (op) {
+
+                // Se pone los datos del usuario como nombre, username y contraseña. Si ya existe el username te manda al menu para poder volver a crear el otro usuario con otr contraseña
                 case 1:
                     System.out.print("Nombre completo: ");
                     String nombre = sc.nextLine();
@@ -45,6 +48,7 @@ public class Main {
                     id++;
                     break;
 
+                // Se ingresa el usuario y la contraseña. Si el usuario y la contraseñla estan dentro del mapaUsuario y todo coincide, llama al MenuUsuario
                 case 2:
                     System.out.print("Username: ");
                     String user = sc.nextLine();
@@ -67,6 +71,7 @@ public class Main {
                     }
                     break;
 
+                // Trae los valores del mapa de usuarios, con el nombre, username y su ID
                 case 3:
                     System.out.println("Usuarios registrados:");
                     for (Usuario u : mapaUsuarios.values()) {
@@ -81,6 +86,7 @@ public class Main {
         System.out.println("Sistema finalizado.");
     }
 
+    // Menu de usuario, este va a recibir el usuario, la lista dr usuarios con su ID, la lista de usuarios dados de baja, el grupo, la lista de grupos y el scanner usado previamente
     private static void menuUsuario(Usuario u, Map<Integer, Usuario> mapa, List<Usuario> bajas,
                                     GrafoUsuarios grafo, List<GrafoGrupo> grupos, Scanner sc) {
         int op;
@@ -107,10 +113,13 @@ public class Main {
             op = Integer.parseInt(sc.nextLine());
 
             switch (op) {
+
+                // Muestra el conjunto de amigos del Usuario
                 case 1:
                     u.mostrarAmigos();
                     break;
 
+                // Busca por ID a un Usuario y lo agrega al Conjunto de amigos. Tambien forma una relacion de grafos 1:1 entre ambos usuarios
                 case 2:
                     System.out.print("ID del amigo a agregar: ");
                     Usuario a = mapa.get(Integer.parseInt(sc.nextLine()));
@@ -120,6 +129,7 @@ public class Main {
                     }
                     break;
 
+                // Busca por ID a un usuario y lo elimina del conjunto
                 case 3:
                     System.out.print("ID del amigo a eliminar: ");
                     Usuario b = mapa.get(Integer.parseInt(sc.nextLine()));
@@ -129,6 +139,7 @@ public class Main {
                     }
                     break;
 
+                // Manda un mensaje a un usuario
                 case 4:
                     System.out.print("ID destinatario: ");
                     Usuario dest = mapa.get(Integer.parseInt(sc.nextLine()));
@@ -140,6 +151,7 @@ public class Main {
                     }
                     break;
 
+                // Muestra todos los mensajes intercambiados entre el usuario y otro usuario
                 case 5:
                     System.out.print("ID del usuario: ");
                     Usuario otro = mapa.get(Integer.parseInt(sc.nextLine()));
@@ -148,6 +160,7 @@ public class Main {
                     }
                     break;
 
+                // Muestra sugerencias de amistad (amigos de amigos) usando el grafo de usuarios
                 case 6:
                     System.out.println("Sugerencias de amigos:");
                     Set<Usuario> sugerencias = grafo.sugerenciasDeAmigos(u);
@@ -156,6 +169,7 @@ public class Main {
                     }
                     break;
 
+                // Verifica si el usuario actual está conectado con otro (directa o indirectamente)
                 case 7:
                     System.out.print("ID del usuario: ");
                     Usuario conectado = mapa.get(Integer.parseInt(sc.nextLine()));
@@ -166,16 +180,19 @@ public class Main {
                     }
                     break;
 
+                // Verifica si el usuario actual es amigo directo de otro usuario
                 case 8:
                     System.out.print("ID del usuario: ");
                     Usuario amigo = mapa.get(Integer.parseInt(sc.nextLine()));
                     System.out.println(u.esAmigoDe(amigo) ? "Sí son amigos." : "No son amigos.");
                     break;
 
+                // Muestra toda la bandeja de mensajes del usuario actual
                 case 9:
                     u.mostrarMensajes();
                     break;
 
+                // Crea un nuevo grupo y agrega al usuario actual como miembro
                 case 10:
                     System.out.print("Nombre del grupo: ");
                     String nombreGrupo = sc.nextLine();
@@ -185,6 +202,7 @@ public class Main {
                     System.out.println("Grupo creado y se te ha agregado.");
                     break;
 
+                // Muestra todos los grupos en los que el usuario es miembro
                 case 11:
                     System.out.println("Grupos en los que participás:");
                     for (GrafoGrupo g : grupos) {
@@ -194,6 +212,7 @@ public class Main {
                     }
                     break;
 
+                // Envía un mensaje a un usuario dentro de un grupo determinado
                 case 12:
                     System.out.print("Nombre del grupo: ");
                     String grupoNombre = sc.nextLine();
@@ -217,6 +236,7 @@ public class Main {
                     }
                     break;
 
+                // Muestra todos los mensajes del grupo si el usuario es miembro
                 case 13:
                     System.out.print("Nombre del grupo: ");
                     String grupoVer = sc.nextLine();
@@ -230,6 +250,7 @@ public class Main {
                     }
                     break;
 
+                // Muestra el grafo de conexiones entre miembros del grupo
                 case 14:
                     System.out.print("Nombre del grupo: ");
                     String grupoMostrar = sc.nextLine();
@@ -244,6 +265,7 @@ public class Main {
                     }
                     break;
 
+                // Agrega otro usuario al grupo si el usuario actual ya es miembro
                 case 15:
                     System.out.print("Nombre del grupo: ");
                     String grupoAgregar = sc.nextLine();
@@ -266,6 +288,8 @@ public class Main {
                         System.out.println("El grupo no existe o no sos miembro.");
                     }
                     break;
+
+                // Elimina a un usuario del grupo si el actual es miembro
                 case 16:
                     System.out.print("Nombre del grupo: ");
                     String grupoEliminar = sc.nextLine();
@@ -290,6 +314,7 @@ public class Main {
 
             }
 
-        } while (op != 17);
+        // 17: salir del menú
+        } while (op != 17); 
     }
 }
